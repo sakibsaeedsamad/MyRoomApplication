@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="male">Male</string>
+
+    <string-array name="locationAarray">
+        <item>Dhaka</item>
+        <item>Chattogram</item>
+        <item>Sylhet</item>
+        <item>Khulna</item>
+        <item>Rangpur</item>
+        <item>Rajshahi</item>
+        <item>Barishal</item>
+        <item>Mymensingh</item>
+    </string-array>
+</resources>
