@@ -13,17 +13,25 @@ import android.util.Base64
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProviders
 import com.sssakib.myapplication.R
+import com.sssakib.myapplication.model.User
+import com.sssakib.myapplication.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_update.*
 import kotlinx.android.synthetic.main.activity_update.locationUpdateSpinner
+import kotlinx.android.synthetic.main.activity_update.view.*
 import java.io.ByteArrayOutputStream
 
 class UpdateActivity : AppCompatActivity() {
 
     val RequestPermissionCode = 1
+
+    lateinit var viewModel: UserViewModel
+    lateinit var locationString: String
 
 
     var uId = 0
@@ -37,6 +45,7 @@ class UpdateActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
         EnableRuntimePermission()
+        viewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
 
         val intent = intent
         uId=intent.extras!!.getInt("id")
@@ -46,9 +55,42 @@ class UpdateActivity : AppCompatActivity() {
         uLocation = intent.extras!!.getString("location")
         uImage = intent.extras!!.getString("image")
 
-        nameUpdateET.setText(uName)
-        phoneUpdateET.setText(uPhone)
+        nameUpdateET.setText(uName).toString()
+        phoneUpdateET.setText(uPhone).toString()
         profileUpdateImageView.setImageBitmap(convertStringToBitmap(uImage))
+
+
+
+//access the items of the list
+        val location = resources.getStringArray(R.array.locationAarray)
+//access the spinner
+        if (locationUpdateSpinner != null) {
+            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, location)
+            locationUpdateSpinner.adapter = adapter
+
+            locationUpdateSpinner.onItemSelectedListener = object :
+                AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    locationString = location[position]
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {
+
+                }
+            }
+        }
+
+
+
+        updateUserButton.setOnClickListener(View.OnClickListener {
+            updateUser();
+        })
+
 
 
 
@@ -56,6 +98,62 @@ class UpdateActivity : AppCompatActivity() {
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             startActivityForResult(intent, 7)
         })
+
+    }
+
+    private fun updateUser() {
+        var name = nameUpdateET.getText().toString().trim()
+        var phone = phoneUpdateET.getText().toString().trim()
+
+        //For RadioButton
+        val selectedId = radioGroupUpdate.checkedRadioButtonId
+        var genderRadioButton = findViewById<View>(selectedId) as RadioButton
+        var genderString = genderRadioButton.getText().toString()
+
+        var isAgree = agreeToUpdateCheckbox.isChecked
+
+        if (name.isEmpty() && name.length <= 2) {
+            nameUpdateET.error = "Name Required"
+            nameUpdateET.requestFocus()
+        }
+        if (phone.isEmpty() || (phone.length < 11 && phone.length >=11) ) {
+
+            phoneUpdateET.error = "Valid Phone Number Required"
+            phoneUpdateET.requestFocus()
+        }
+        if (genderString.isEmpty()) {
+            Toast.makeText(
+                this@UpdateActivity,
+                "Please select gender",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+        if (uImage.isNullOrEmpty()) {
+            Toast.makeText(
+                this@UpdateActivity,
+                "Please take a photo",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        if (!isAgree) {
+
+            Toast.makeText(
+                this@UpdateActivity,
+                "Please agree to Update!",
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            val user = User(uId, name, phone, genderString, locationString,uImage)
+            viewModel.updateUserInfo(user)
+            Toast.makeText(
+                this@UpdateActivity,
+                "User Updated!",
+                Toast.LENGTH_LONG
+            ).show()
+
+        }
+
 
     }
 
@@ -129,3 +227,4 @@ class UpdateActivity : AppCompatActivity() {
 
 
 }
+
