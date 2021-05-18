@@ -63,28 +63,31 @@ class UpdateActivity : AppCompatActivity() {
 
 //access the items of the list
         val location = resources.getStringArray(R.array.locationAarray)
-//access the spinner
-        if (locationUpdateSpinner != null) {
-            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, location)
-            locationUpdateSpinner.adapter = adapter
+// Create an ArrayAdapter
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, location)
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+// Apply the adapter to the spinner
+        locationUpdateSpinner.adapter = adapter
+        if (uLocation != null) {
+            val spinnerPosition: Int = adapter.getPosition(uLocation)
+            locationUpdateSpinner.setSelection(spinnerPosition)
+        }
+        locationUpdateSpinner.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                locationString = location[position]
+            }
 
-            locationUpdateSpinner.onItemSelectedListener = object :
-                AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    locationString = location[position]
-                }
+            override fun onNothingSelected(parent: AdapterView<*>) {
 
-                override fun onNothingSelected(parent: AdapterView<*>) {
-
-                }
             }
         }
-
 
 
         updateUserButton.setOnClickListener(View.OnClickListener {

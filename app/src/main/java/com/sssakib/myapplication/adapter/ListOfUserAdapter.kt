@@ -39,8 +39,6 @@ class ListOfUserAdapter(val listener: RowClickListener) :
             listener.onItemClickListener(items[position])
         }
         holder.bind(items[position])
-
-
     }
 
 
