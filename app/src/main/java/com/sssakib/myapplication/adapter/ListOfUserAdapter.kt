@@ -1,17 +1,20 @@
 package com.sssakib.myapplication.adapter
 
+import android.content.ContentValues.TAG
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.sssakib.myapplication.R
 import com.sssakib.myapplication.model.User
 import kotlinx.android.synthetic.main.list_user_recyclerview.view.*
 
-class ListOfUserAdapter(val listener: RowClickListener) :
+class ListOfUserAdapter(val listener: OnRowClickListener) :
     RecyclerView.Adapter<ListOfUserAdapter.MyViewHolder>() {
 
     var items = ArrayList<User>()
@@ -35,17 +38,24 @@ class ListOfUserAdapter(val listener: RowClickListener) :
 
     override fun onBindViewHolder(holder: ListOfUserAdapter.MyViewHolder, position: Int) {
 
-        holder.itemView.setOnClickListener {
-            listener.onItemClickListener(items[position])
+holder.updateBTN.setOnClickListener {
+   listener.onUpdateClick(items[position])
+}
+        holder.deleteBTN.setOnClickListener {
+            listener.onDeleteClick(items[position])
         }
+
+
         holder.bind(items[position])
 
 
     }
 
 
-    class MyViewHolder(view: View, val listener: RowClickListener) : RecyclerView.ViewHolder(view) {
+    class MyViewHolder(view: View, val listener: OnRowClickListener) : RecyclerView.ViewHolder(view) {
 
+        val deleteBTN = view.deleteBTN
+        val updateBTN = view.updateBTN
 
         val nameTextView = view.nameTextView
         val ageTextView = view.ageTextView
@@ -62,22 +72,19 @@ class ListOfUserAdapter(val listener: RowClickListener) :
             genderTextView.text = "Gender: " + data.gender
             locationTextView.text = "Location: " + data.location
             imageView.setImageBitmap(convertStringToBitmap(data.image))
-
-
         }
-
-
-
-
 
         fun convertStringToBitmap(string: String?): Bitmap {
             val byteArray =
                 Base64.decode(string, Base64.DEFAULT)
             return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
         }
+
+
     }
 
-    interface RowClickListener {
-        fun onItemClickListener(user: User)
+    interface OnRowClickListener {
+        fun onUpdateClick(user: User)
+        fun onDeleteClick(user: User)
     }
 }

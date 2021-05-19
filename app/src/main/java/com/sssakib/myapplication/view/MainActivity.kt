@@ -18,7 +18,7 @@ import com.sssakib.myapplication.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_dialog.*
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), ListOfUserAdapter.RowClickListener {
+class MainActivity : AppCompatActivity(), ListOfUserAdapter.OnRowClickListener {
 
     lateinit var listOfUserAdapter: ListOfUserAdapter
     lateinit var viewModel: UserViewModel
@@ -31,12 +31,12 @@ class MainActivity : AppCompatActivity(), ListOfUserAdapter.RowClickListener {
         viewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
 
 
-        registerButton.setOnClickListener{
-            val intent =Intent(this,RegisterActivity::class.java)
+        registerButton.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
 
-        viewCustomerButton.setOnClickListener{
+        viewCustomerButton.setOnClickListener {
 
             recyclerView.apply {
                 layoutManager = LinearLayoutManager(this@MainActivity)
@@ -51,15 +51,13 @@ class MainActivity : AppCompatActivity(), ListOfUserAdapter.RowClickListener {
             })
 
 
-
-
         }
 
 
     }
 
-    override fun onItemClickListener(user: User) {
-        val uId= user.id
+    override fun onUpdateClick(user: User) {
+        val uId = user.id
         val uName = user.name
         val uAge = user.age
         val uPhone = user.phone
@@ -68,30 +66,28 @@ class MainActivity : AppCompatActivity(), ListOfUserAdapter.RowClickListener {
         val uImage = user.image
 
 
+        val intent = Intent(this, UpdateActivity::class.java)
+        intent.putExtra("id", uId)
+        intent.putExtra("name", uName)
+        intent.putExtra("age", uAge)
+        intent.putExtra("phone", uPhone)
+        intent.putExtra("gender", uGender)
+        intent.putExtra("location", uLocation)
+        intent.putExtra("image", uImage)
+        startActivity(intent)
+
+    }
+
+    override fun onDeleteClick(user: User) {
 
         val dialog = MaterialDialog(this)
             .noAutoDismiss()
             .customView(R.layout.activity_dialog)
 
-        dialog.userUpdateButton.setOnClickListener{
-            val intent =Intent(this,UpdateActivity::class.java)
-            intent.putExtra("id",uId)
-            intent.putExtra("name",uName)
-            intent.putExtra("age",uAge)
-            intent.putExtra("phone",uPhone)
-            intent.putExtra("gender",uGender)
-            intent.putExtra("location",uLocation)
-            intent.putExtra("image",uImage)
-            startActivity(intent)
-            dialog.dismiss()
-        }
-        dialog.userDeleteButton.setOnClickListener{
-
+        dialog.userDeleteOkButton.setOnClickListener {
             viewModel.deleteUserInfo(user)
-
             dialog.dismiss()
         }
-
         dialog.show()
     }
 

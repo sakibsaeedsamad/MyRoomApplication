@@ -99,7 +99,7 @@
                 android:gravity="center_vertical"
                 android:src="@drawable/ic_update_user"
                 android:scaleType="fitCenter"
-                app:backgroundTint="#282A36" />
+                app:backgroundTint="#FFFF" />
 
             <ImageButton
                 android:id="@+id/deleteBTN"
