@@ -12,6 +12,8 @@ data class User(
     var id: Int = 0,
     @ColumnInfo(name = "name")
     val name: String?,
+    @ColumnInfo(name = "age")
+    val age: String?,
     @ColumnInfo(name = "phone")
     val phone: String?,
     @ColumnInfo(name = "gender")

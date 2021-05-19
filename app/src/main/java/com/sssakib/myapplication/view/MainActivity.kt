@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity(), ListOfUserAdapter.RowClickListener {
     override fun onItemClickListener(user: User) {
         val uId= user.id
         val uName = user.name
+        val uAge = user.age
         val uPhone = user.phone
         val uGender = user.gender
         val uLocation = user.location
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity(), ListOfUserAdapter.RowClickListener {
             val intent =Intent(this,UpdateActivity::class.java)
             intent.putExtra("id",uId)
             intent.putExtra("name",uName)
+            intent.putExtra("age",uAge)
             intent.putExtra("phone",uPhone)
             intent.putExtra("gender",uGender)
             intent.putExtra("location",uLocation)

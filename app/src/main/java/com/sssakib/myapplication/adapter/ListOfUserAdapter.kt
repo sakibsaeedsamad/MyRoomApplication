@@ -39,6 +39,8 @@ class ListOfUserAdapter(val listener: RowClickListener) :
             listener.onItemClickListener(items[position])
         }
         holder.bind(items[position])
+
+
     }
 
 
@@ -46,6 +48,7 @@ class ListOfUserAdapter(val listener: RowClickListener) :
 
 
         val nameTextView = view.nameTextView
+        val ageTextView = view.ageTextView
         val phoneTextView = view.phoneTextView
         val genderTextView = view.genderTextView
         val locationTextView = view.locationTextView
@@ -54,6 +57,7 @@ class ListOfUserAdapter(val listener: RowClickListener) :
 
         fun bind(data: User) {
             nameTextView.text = "Name: " + data.name
+            ageTextView.text = "Age: " + data.age
             phoneTextView.text = "Phone: " + data.phone
             genderTextView.text = "Gender: " + data.gender
             locationTextView.text = "Location: " + data.location
@@ -61,6 +65,8 @@ class ListOfUserAdapter(val listener: RowClickListener) :
 
 
         }
+
+
 
 
 
