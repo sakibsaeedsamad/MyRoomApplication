@@ -48,9 +48,6 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1"
-
     //livedata and viewmodel
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     kapt "android.arch.lifecycle:compiler:1.1.1"
