@@ -3,15 +3,20 @@ package com.sssakib.myapplication.view
 import android.Manifest
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Base64
+import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -27,8 +32,8 @@ import com.sssakib.myapplication.model.User
 import com.sssakib.myapplication.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_register.*
 import java.io.ByteArrayOutputStream
-import java.time.Year
 import java.util.*
+
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -55,11 +60,15 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+
+
         viewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
 
         //Initially set Male Radiobutton and genderString
         maleRadioButton.isChecked = true
-        genderString="Male"
+        genderString = "Male"
 
 
 //access the items of the list
@@ -104,35 +113,66 @@ class RegisterActivity : AppCompatActivity() {
 
         }
         bdatePickBTN.setOnClickListener {
-            val dpkr= DatePickerDialog(this, DatePickerDialog.OnDateSetListener{ datePicker: DatePicker, mYear: Int, mMonth: Int, mDay: Int ->
+            val dpkr = DatePickerDialog(
+                this,
+                DatePickerDialog.OnDateSetListener { datePicker: DatePicker, mYear: Int, mMonth: Int, mDay: Int ->
 
-                tempAge= (year - mYear)
-                age = tempAge.toString()
-                ageTV.setText("Your age is: "+age)
+                    tempAge = (year - mYear)
+                    age = tempAge.toString()
+                    ageTV.setText("Your age is: " + age)
 
-            }, year,month,day)
+                },
+                year,
+                month,
+                day
+            )
 
             dpkr.show()
 
         }
 
-        radioGroup.setOnCheckedChangeListener( RadioGroup.OnCheckedChangeListener() { radioGroup: RadioGroup, checkedId: Int ->
+        radioGroup.setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener() { radioGroup: RadioGroup, checkedId: Int ->
 
-            when(checkedId){
-                R.id.maleRadioButton -> genderString="Male"
-                R.id.femaleRadioButton -> genderString="Female"
+            when (checkedId) {
+                R.id.maleRadioButton -> genderString = "Male"
+                R.id.femaleRadioButton -> genderString = "Female"
             }
         });
 
 
+    }
 
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val v = currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    v.clearFocus()
+                    val imm =
+                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setUser() {
         name = nameRegistrationET.getText().toString().trim()
         phone = phoneRegistrationET.getText().toString().trim()
-       genderString
+        genderString
         var isAgree = agreeCheckbox.isChecked
 
         if (name.length <= 2) {
@@ -172,7 +212,7 @@ class RegisterActivity : AppCompatActivity() {
             ).show()
         }
 
-        if (tempAge==0 || tempAge <= 17) {
+        if (tempAge == 0 || tempAge <= 17) {
 
             Toast.makeText(
                 this,
@@ -187,14 +227,11 @@ class RegisterActivity : AppCompatActivity() {
                 "Please agree to register!",
                 Toast.LENGTH_LONG
             ).show()
-        }
-
-
-        else {
+        } else {
             val user = User(0, name, age, phone, genderString, locationString, imageResult)
             viewModel.insertUserInfo(user)
 
-            val intent =Intent(this, MainActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
 
             Toast.makeText(

@@ -1,18 +1,16 @@
 package com.sssakib.myapplication.view
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.sssakib.myapplication.R
 import com.sssakib.myapplication.adapter.ListOfUserAdapter
-import com.sssakib.myapplication.adapter.ListOfUserAdapter.MyViewHolder
 import com.sssakib.myapplication.model.User
 import com.sssakib.myapplication.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_dialog.*
@@ -29,6 +27,9 @@ class MainActivity : AppCompatActivity(), ListOfUserAdapter.OnRowClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
 
 
         registerButton.setOnClickListener {
@@ -54,6 +55,15 @@ class MainActivity : AppCompatActivity(), ListOfUserAdapter.OnRowClickListener {
         }
 
 
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onUpdateClick(user: User) {

@@ -3,21 +3,24 @@ package com.sssakib.myapplication.view
 import android.Manifest
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Base64
+import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
@@ -30,7 +33,6 @@ import com.sssakib.myapplication.model.User
 import com.sssakib.myapplication.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_update.*
-import kotlinx.android.synthetic.main.activity_update.locationUpdateSpinner
 import kotlinx.android.synthetic.main.activity_update.view.*
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -65,6 +67,8 @@ class UpdateActivity : AppCompatActivity() {
         setContentView(R.layout.activity_update)
         viewModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
 
+
+
         val intent = intent
         uId = intent.extras!!.getInt("id")
         uName = intent.extras!!.getString("name")
@@ -78,6 +82,11 @@ class UpdateActivity : AppCompatActivity() {
         phoneUpdateET.setText(uPhone).toString()
         updateAgeTV.setText("Your age is: " + uAge)
         profileUpdateImageView.setImageBitmap(convertStringToBitmap(uImage))
+
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+
 
 
 //access the items of the list
@@ -119,14 +128,20 @@ class UpdateActivity : AppCompatActivity() {
 
 
         updateBdatePickBTN.setOnClickListener {
-            val dpkr= DatePickerDialog(this, DatePickerDialog.OnDateSetListener{ datePicker: DatePicker, mYear: Int, mMonth: Int, mDay: Int ->
+            val dpkr= DatePickerDialog(
+                this,
+                DatePickerDialog.OnDateSetListener { datePicker: DatePicker, mYear: Int, mMonth: Int, mDay: Int ->
 
-                tempAge= (year - mYear)
-                age = tempAge.toString()
-                updateAgeTV.setText("Your age is: "+age)
-                uAge=age
+                    tempAge = (year - mYear)
+                    age = tempAge.toString()
+                    updateAgeTV.setText("Your age is: " + age)
+                    uAge = age
 
-            }, year,month,day)
+                },
+                year,
+                month,
+                day
+            )
 
             dpkr.show()
 
@@ -139,18 +154,45 @@ class UpdateActivity : AppCompatActivity() {
             femaleUpdateRadioButton.isChecked = true
         }
 
-        radioGroupUpdate.setOnCheckedChangeListener( RadioGroup.OnCheckedChangeListener() { radioGroup: RadioGroup, checkedId: Int ->
+        radioGroupUpdate.setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener() { radioGroup: RadioGroup, checkedId: Int ->
 
 
-            when(checkedId){
-                R.id.maleUpdateRadioButton -> uGender="Male"
-                R.id.femaleUpdateRadioButton -> uGender="Female"
+            when (checkedId) {
+                R.id.maleUpdateRadioButton -> uGender = "Male"
+                R.id.femaleUpdateRadioButton -> uGender = "Female"
             }
         });
 
 
 
 
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val v = currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    v.clearFocus()
+                    val imm =
+                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun updateUser() {
@@ -210,7 +252,7 @@ class UpdateActivity : AppCompatActivity() {
 
 
 
-            val intent =Intent(this,MainActivity::class.java)
+            val intent =Intent(this, MainActivity::class.java)
             startActivity(intent)
 
             Toast.makeText(
